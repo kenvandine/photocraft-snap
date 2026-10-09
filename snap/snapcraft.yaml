@@ -1,0 +1,74 @@
+name: photocraft
+title: PhotoCraft
+base: core24
+version: '0.5.0'
+summary: Image editor for photos and layered PSD files
+description: |
+  PhotoCraft is an open-source, native image editor that works the way Photoshop users expect: layers, masks, adjustment layers, layer styles, type and brushes, with GPU compositing and support for layered PSD/PSB files.
+
+  PhotoCraft is part of the open-source ArtCraft "Crafting Apps": a native Rust
+  application that runs locally on your own files and can be driven from a CLI,
+  a JSON control channel or an MCP server.
+
+  This snap repackages the official upstream Linux release. The headless
+  command line tool is available as photocraft.cli.
+license: MIT OR Apache-2.0
+website: https://getartcraft.com/apps/photocraft
+source-code: https://github.com/storytold/photocraft
+issues: https://github.com/storytold/photocraft/issues
+contact: https://github.com/kenvandine/photocraft-snap/issues
+icon: snap/gui/photocraft.png
+grade: stable
+confinement: strict
+
+platforms:
+  amd64:
+  arm64:
+
+apps:
+  photocraft:
+    command: bin/photocraft
+    extensions: [gnome]
+    common-id: ai.storyteller.photocraft
+    plugs:
+      - audio-playback
+      - home
+      - network
+      - network-bind
+      - opengl
+      - removable-media
+  cli:
+    command: bin/photocraft-cli
+    extensions: [gnome]
+    plugs:
+      - home
+      - network
+      - network-bind
+      - removable-media
+
+parts:
+  photocraft:
+    plugin: nil
+    build-packages:
+      - ca-certificates
+      - curl
+    stage-packages:
+      - libvulkan1
+      - libxkbcommon-x11-0
+    override-pull: |
+      set -eu
+      case "$CRAFT_ARCH_BUILD_FOR" in
+        amd64) arch=x86_64 ;;
+        arm64) arch=aarch64 ;;
+        *) echo "unsupported architecture: $CRAFT_ARCH_BUILD_FOR" >&2; exit 1 ;;
+      esac
+      name="photocraft-${CRAFT_PROJECT_VERSION}-linux-${arch}"
+      url="https://github.com/storytold/photocraft/releases/download/v${CRAFT_PROJECT_VERSION}"
+      curl -fsSL --retry 3 -o "${name}.tar.gz" "${url}/${name}.tar.gz"
+      curl -fsSL --retry 3 -o SHA256SUMS.txt "${url}/SHA256SUMS.txt"
+      grep -E "[ *]${name}\.tar\.gz\$" SHA256SUMS.txt | sha256sum -c -
+      tar xzf "${name}.tar.gz" --strip-components=1
+      rm -f "${name}.tar.gz" SHA256SUMS.txt
+    override-build: |
+      set -eu
+      cp -a bin share "$CRAFT_PART_INSTALL/"
