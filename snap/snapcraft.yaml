@@ -1,7 +1,7 @@
 name: photocraft
 title: PhotoCraft
 base: core24
-version: '0.9.0'
+version: '0.10.0'
 summary: Image editor for photos and layered PSD files
 description: |
   PhotoCraft is an open-source, native image editor that works the way Photoshop users expect: layers, masks, adjustment layers, layer styles, type and brushes, with GPU compositing and support for layered PSD/PSB files.
