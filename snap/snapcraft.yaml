@@ -1,6 +1,6 @@
 name: photocraft
 title: PhotoCraft
-base: core24
+base: core26
 version: '0.23.1'
 summary: Image editor for photos and layered PSD files
 description: |
